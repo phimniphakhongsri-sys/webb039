@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สินค้าทั้งหมด - ร้านค้าเกิดลาภ</title>
+    <!-- นำเข้าฟอนต์ภาษาไทย Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ตั้งค่าโทนสีฟ้า - ขาว สะอาดตา ทันสมัย */
+        :root {
+            --primary-blue: #1E6BB8;     /* สีฟ้าน้ำเงินหลัก */
+            --dark-blue: #12457A;        /* สีฟ้าเข้ม สำหรับไล่เฉดและส่วนท้าย */
+            --light-blue: #3A8DDE;       /* สีฟ้าสว่าง สำหรับ Hover */
+            --sky-accent: #E3F2FD;       /* สีฟ้าอ่อนพาสเทล สำหรับกล่องไฮไลท์ */
+            --border-blue: #BBDEFB;      /* สีเส้นขอบฟ้าอ่อน */
+            --bg-main: #F4F9FD;          /* สีพื้นหลังขาวอมฟ้าสบายตา */
+            --card-white: #FFFFFF;       /* สีขาวบริสุทธิ์สำหรับกล่องข้อมูล */
+            --text-dark: #1F2937;        /* สีตัวอักษรหลัก */
+            --text-muted: #64748B;       /* สีตัวอักษรรอง */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Prompt', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ส่วนหัวเว็บไซต์ (Header) */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #7CC4FA;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(30, 107, 184, 0.15);
+        }
+
+        .logo-area h1 {
+            font-size: 1.8rem;
+            color: #FFFFFF;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-area p {
+            font-size: 0.85rem;
+            color: #D6EBFF;
+        }
+
+        /* เมนูนำทาง */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: #FFFFFF;
+            color: var(--primary-blue);
+        }
+
+        /* แถบหัวข้อหน้าสินค้าทั้งหมด */
+        .page-header {
+            background: linear-gradient(to right, var(--sky-accent), #FFFFFF);
+            padding: 30px 5%;
+            border-bottom: 2px solid var(--border-blue);
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.9rem;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* โครงสร้างหลัก แบ่งซ้าย (สินค้า) และ ขวา (ตะกร้า + กรอบข้อมูล) */
+        .main-container {
+            max-width: 1280px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+
+        /* ฝั่งซ้าย: รายการสินค้า (70%) */
+        .product-section {
+            flex: 7;
+        }
+
+        /* แถบค้นหาและปุ่มเลือกหมวดหมู่ */
+        .filter-bar {
+            background: var(--card-white);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-blue);
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(30, 107, 184, 0.06);
+        }
+
+        .search-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--dark-blue);
+            font-size: 0.95rem;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .cat-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border-blue);
+            background-color: var(--bg-main);
+            color: var(--dark-blue);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .cat-btn:hover, .cat-btn.active {
+            background-color: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .search-box {
+            padding: 7px 14px;
+            border: 1px solid var(--border-blue);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            outline: none;
+            width: 240px;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--card-white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(30, 107, 184, 0.08);
+            border: 1px solid var(--border-blue);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(30, 107, 184, 0.16);
+            border-color: var(--primary-blue);
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(18, 69, 122, 0.88);
+            color: white;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+
+        /* กรอบใส่รูปสินค้า */
+        .product-img-box {
+            width: 100%;
+            height: 190px;
+            background-color: var(--sky-accent);
+            overflow: hidden;
+        }
+
+        .product-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover .product-img-box img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .product-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add-cart:hover {
+            background-color: var(--light-blue);
+        }
+
+        /* ฝั่งขวา: แถบด้านข้าง (30%) ประกอบด้วย ตะกร้าสินค้า และ กรอบข้อมูล */
+        .right-sidebar {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 90px;
+        }
+
+        .sidebar-box {
+            background: var(--card-white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(30, 107, 184, 0.08);
+            border: 1px solid var(--border-blue);
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .sidebar-box h3 {
+            color: var(--dark-blue);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--sky-accent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ส่วนตะกร้าสินค้าด้านขวา */
+        .cart-badge {
+            background-color: var(--sky-accent);
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-blue);
+        }
+
+        .cart-items-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-blue);
+            font-size: 0.9rem;
+        }
+
+        .cart-item-remove {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            border-radius: 4px;
+            padding: 2px 7px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark-blue);
+            padding-top: 10px;
+            border-top: 2px solid var(--primary-blue);
+            margin-bottom: 15px;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right, var(--primary-blue), var(--light-blue));
+            color: #FFFFFF;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(30, 107, 184, 0.25);
+        }
+
+        .btn-checkout:hover {
+            filter: brightness(1.06);
+        }
+
+        /* ส่วนกรอบข้อมูลร้านค้าด้านขวา */
+        .info-list {
+            list-style: none;
+            font-size: 0.92rem;
+        }
+
+        .info-list li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+            border-left: 3px solid var(--primary-blue);
+        }
+
+        .info-highlight {
+            background-color: var(--sky-accent);
+            border: 1px solid var(--border-blue);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            color: var(--dark-blue);
+            margin-top: 10px;
+        }
+
+        /* ส่วนท้ายเว็บไซต์ (Footer) */
+        footer {
+            background-color: var(--dark-blue);
+            color: #E3F2FD;
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 50px;
+            border-top: 4px solid #7CC4FA;
+            font-size: 0.9rem;
+        }
+
+        /* รองรับหน้าจอมือถือ */
+        @media (max-width: 850px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .right-sidebar {
+                width: 100%;
+                position: static;
+            }
+            header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ส่วนหัวเว็บไซต์ -->
+    <header>
+        <div class="logo-area">
+            <h1>🛍️ ร้านค้าเกิดลาภ</h1>
+            <p>ศูนย์รวมสินค้าคุณภาพ ราคาเป็นกันเอง บริการประทับใจ</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="products.html" class="active">สินค้าทั้งหมด</a></li>
+                <li><a href="#contact">โปรโมชั่น</a></li>
+                <li><a href="#contact">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- หัวข้อหน้าสินค้าทั้งหมด -->
+    <section class="page-header">
+        <h2>สินค้าทั้งหมดของร้านค้าเกิดลาภ</h2>
+        <p>เลือกชมสินค้าตามหมวดหมู่ที่ต้องการ กดเพิ่มลงตะกร้าเพื่อคำนวณยอดสั่งซื้อได้ทันที</p>  
+    </section>
+
+    <!-- พื้นที่เนื้อหาหลัก -->
+    <div class="main-container">
+        
+        <!-- ฝั่งซ้าย: รายการสินค้าทั้งหมด -->
+        <main class="product-section">
+            
+            <!-- แถบเลือกหมวดหมู่และค้นหา -->
+            <div class="filter-bar">
+                <div class="search-row">
+                    <span class="filter-label">📂 เลือกหมวดหมู่สินค้า:</span>
+                    <input type="text" class="search-box" id="searchInput" onkeyup="searchProducts()" placeholder="🔍 ค้นหาชื่อสินค้า...">
+                </div>
+                <div class="category-buttons">
+                    <button class="cat-btn active" onclick="filterCategory('all', this)">ทั้งหมด</button>
+                    <button class="cat-btn" onclick="filterCategory('fresh', this)">ของสด</button>
+                    <button class="cat-btn" onclick="filterCategory('construction', this)">อุปกรณ์ก่อสร้าง</button>
+                    <button class="cat-btn" onclick="filterCategory('dryfood', this)">อาหารแห้ง</button>
+                    <button class="cat-btn" onclick="filterCategory('condiment', this)">เครื่องปรุง</button>
+                    <button class="cat-btn" onclick="filterCategory('drink', this)">เครื่องดื่ม</button>
+                    <button class="cat-btn" onclick="filterCategory('snack', this)">ขนมอื่นๆ</button>
+                    <button class="cat-btn" onclick="filterCategory('medicine', this)">ยา</button>
+                    <button class="cat-btn" onclick="filterCategory('cream', this)">ครีม</button>
+                </div>
+            </div>
+
+            <div class="product-grid" id="productGrid">
+                
+                <!-- 1. หมวดของสด -->
+                <div class="product-card" data-category="fresh">
+                    <span class="category-tag">ของสด</span>
+                    <div class="product-img-box">
+                        <img src="image/144.png" alt="ไข่ไก่สดเบอร์ 1">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ไข่ไก่สดฟาร์ม เบอร์ 1 (แผง 30 ฟอง)</h3>
+                            <p class="product-desc">ไข่ไก่สดใหม่จากฟาร์มทุกวัน ฟองโต ไข่แดงสวย</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿135</div>
+                            <button class="btn-add-cart" onclick="addToCart('ไข่ไก่สดฟาร์ม เบอร์ 1 (30 ฟอง)', 135)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. หมวดอุปกรณ์ก่อสร้าง -->
+                <div class="product-card" data-category="construction">
+                    <span class="category-tag">อุปกรณ์ก่อสร้าง</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=500&q=80" alt="ค้อนหงอนด้ามไฟเบอร์">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ค้อนหงอนด้ามไฟเบอร์อย่างดี</h3>
+                            <p class="product-desc">หัวเหล็กกล้าแข็งแรง ทนทาน ด้ามจับกันลื่นกระชับมือ</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿160</div>
+                            <button class="btn-add-cart" onclick="addToCart('ค้อนหงอนด้ามไฟเบอร์อย่างดี', 160)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. หมวดอาหารแห้ง -->
+                <div class="product-card" data-category="dryfood">
+                    <span class="category-tag">อาหารแห้ง</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=500&q=80" alt="ข้าวหอมมะลิคัดพิเศษ">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ข้าวหอมมะลิคัดพิเศษ 5 กก.</h3>
+                            <p class="product-desc">ข้าวหอมมะลิใหม่ต้นฤดู หุงขึ้นหม้อ นุ่มหอมอร่อย</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿185</div>
+                            <button class="btn-add-cart" onclick="addToCart('ข้าวหอมมะลิคัดพิเศษ 5 กก.', 185)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. หมวดเครื่องปรุง -->
+                <div class="product-card" data-category="condiment">
+                    <span class="category-tag">เครื่องปรุง</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=500&q=80" alt="ชุดเครื่องเทศและซอสปรุงรส">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ชุดเครื่องปรุงรสและพริกไทยป่น</h3>
+                            <p class="product-desc">เครื่องปรุงคู่ครัว กลิ่นหอมเข้มข้น ปรุงอาหารอร่อยกลมกล่อม</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿85</div>
+                            <button class="btn-add-cart" onclick="addToCart('ชุดเครื่องปรุงรสและพริกไทยป่น', 85)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. หมวดเครื่องดื่ม -->
+                <div class="product-card" data-category="drink">
+                    <span class="category-tag">เครื่องดื่ม</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=500&q=80" alt="น้ำดื่มสะอาดแพ็ค 12 ขวด">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">น้ำดื่มสะอาด แพ็ค 12 ขวด (600 มล.)</h3>
+                            <p class="product-desc">น้ำดื่มบริสุทธิ์ผ่านระบบกรองมาตรฐาน สดชื่นทุกขวด</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿55</div>
+                            <button class="btn-add-cart" onclick="addToCart('น้ำดื่มสะอาด แพ็ค 12 ขวด', 55)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. หมวดขนมอื่นๆ -->
+                <div class="product-card" data-category="snack">
+                    <span class="category-tag">ขนมอื่นๆ</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=500&q=80" alt="คุกกี้เนยสดโฮมเมด">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">คุกกี้เนยสดและขนมอบกรอบ</h3>
+                            <p class="product-desc">หอมเนยแท้ กรอบอร่อย ทานเล่นเพลินได้ทั้งครอบครัว</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿65</div>
+                            <button class="btn-add-cart" onclick="addToCart('คุกกี้เนยสดและขนมอบกรอบ', 65)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. หมวดยา -->
+                <div class="product-card" data-category="medicine">
+                    <span class="category-tag">ยา</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=500&q=80" alt="ชุดยาสามัญประจำบ้าน">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ยาสามัญประจำบ้านและยาหม่องสมุนไพร</h3>
+                            <p class="product-desc">พาราเซตามอล ยาดม และยาหม่องบรรเทาอาการปวดเมื่อย</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿95</div>
+                            <button class="btn-add-cart" onclick="addToCart('ยาสามัญประจำบ้านและยาหม่อง', 95)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. หมวดครีม -->
+                <div class="product-card" data-category="cream">
+                    <span class="category-tag">ครีม</span>
+                    <div class="product-img-box">
+                        <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=80" alt="ครีมบำรุงผิวและโลชั่น">
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3 class="product-name">ครีมบำรุงผิวสูตรชุ่มชื้นอ่อนโยน</h3>
+                            <p class="product-desc">ซึมซาบไว ไม่เหนียวเหนอะหนะ บำรุงผิวเนียนนุ่มตลอดวัน</p>
+                        </div>
+                        <div>
+                            <div class="product-price">฿149</div>
+                            <button class="btn-add-cart" onclick="addToCart('ครีมบำรุงผิวสูตรชุ่มชื้นอ่อนโยน', 149)">
+                                🛒 เพิ่มลงตะกร้า
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- ฝั่งขวา: ตะกร้าสินค้า และ กรอบข้อมูลร้านค้า -->
+        <aside class="right-sidebar">
+            
+            <!-- กล่องที่ 1: รูปตะกร้าเพิ่มสินค้า -->
+            <div class="sidebar-box">
+                <h3>
+                    <span>🛒 ตะกร้าสินค้าของคุณ</span>
+                    <span class="cart-badge" id="cart-count">0 ชิ้น</span>
+                </h3>
+                
+                <div class="cart-items-list" id="cart-items">
+                    <p style="color: #94A3B8; text-align: center; padding: 20px 0;">ยังไม่มีสินค้าในตะกร้า</p>
+                </div>
+
+                <div class="cart-total">
+                    <span>ยอดรวมทั้งหมด:</span>
+                    <span id="cart-total-price">฿0</span>
+                </div>
+
+                <button class="btn-checkout" onclick="checkout()">สั่งซื้อสินค้า</button>
+            </div>
+
+            <!-- กล่องที่ 2: ช่องกรอบข้อมูลด้านขวา -->
+            <div class="sidebar-box" id="contact">
+                <h3>📋 ข้อมูลร้านค้าเกิดลาภ</h3>
+                <ul class="info-list">
+                    <li><strong>เวลาเปิด-ปิด:</strong> เปิดทุกวัน 08:00 - 20:00 น.</li>
+                    <li><strong>การจัดส่ง:</strong> จัดส่งด่วนทั่วประเทศ (ตัดรอบ 14:00 น.)</li>
+                    <li><strong>ช่องทางติดต่อ:</strong> โทร. 089-999-9999</li>
+                    <li><strong>Line Official:</strong> @kerdlapshop</li>
+                </ul>
+                <div class="info-highlight">
+                    🎁 <strong>โปรโมชั่นพิเศษ!</strong> ซื้อสินค้าครบ 500 บาทขึ้นไป จัดส่งฟรีทันทีพร้อมรับของแถมพิเศษ
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <!-- ส่วนท้ายเว็บไซต์ -->
+    <footer>
+        <p>© 2026 ร้านค้าเกิดลาภ (Kerdlap Shop) - สงวนลิขสิทธิ์</p>
+    </footer>
+
+    <!-- สคริปต์การทำงานของตะกร้าสินค้า และการกรองหมวดหมู่ -->
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            cart.push({ name: name, price: price });
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const cartItemsEl = document.getElementById('cart-items');
+            const cartCountEl = document.getElementById('cart-count');
+            const cartTotalEl = document.getElementById('cart-total-price');
+
+            cartCountEl.textContent = `${cart.length} ชิ้น`;
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<p style="color: #94A3B8; text-align: center; padding: 20px 0;">ยังไม่มีสินค้าในตะกร้า</p>';
+                cartTotalEl.textContent = '฿0';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                total += item.price;
+                html += `
+                    <div class="cart-item">
+                        <span>${item.name}</span>
+                        <div>
+                            <strong>฿${item.price}</strong>
+                            <button class="cart-item-remove" onclick="removeFromCart(${index})" title="ลบสินค้า">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            cartItemsEl.innerHTML = html;
+            cartTotalEl.textContent = `฿${total.toLocaleString()}`;
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('กรุณาเลือกสินค้าใส่ตะกร้าก่อนสั่งซื้อครับ');
+                return;
+            }
+            alert(`ขอบคุณที่อุดหนุน "ร้านค้าเกิดลาภ"!\nรายการสินค้าทั้งหมด ${cart.length} ชิ้น ยอดรวม ${document.getElementById('cart-total-price').textContent}`);
+            cart = [];
+            updateCartUI();
+        }
+
+        // ฟังก์ชันกรองสินค้าตามหมวดหมู่
+        function filterCategory(category, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // ฟังก์ชันค้นหาชื่อสินค้า
+        function searchProducts() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.product-card');
+
+            cards.forEach(card => {
+                const name = card.querySelector('.product-name').textContent.toLowerCase();
+                if (name.includes(input)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
